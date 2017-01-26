@@ -49,7 +49,7 @@ fail2ban_default_jails:
     maxretry: 10
 ```
 
-As a role dependency
+2. As a role dependency
 --------------------
 
 For any role specific jails you want to configure it can be done as a role depdendency.
