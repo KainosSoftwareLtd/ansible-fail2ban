@@ -1,0 +1,54 @@
+---
+fail2ban_packages:
+  - name: fail2ban
+    state: installed
+
+# Configuration directories
+fail2ban_home: '/etc/fail2ban'
+fail2ban_jail_confd: '{{ fail2ban_home }}/jail.d'
+fail2ban_filter_confd: '{{ fail2ban_home }}/filter.d'
+fail2ban_action_confd: '{{ fail2ban_home }}/action.d'
+fail2ban_main_confd: '{{ fail2ban_home }}/fail2ban.d'
+
+fail2ban_main_conf: '{{ fail2ban_home }}/fail2ban.local'
+fail2ban_jail_conf: '{{ fail2ban_home }}/jail.local'
+
+fail2ban_custom_filters: []
+
+# So when true this flag only configures fail2ban jails and nothing else; this saves us having to apply the entire role if we just
+# want to create an additional jail for vsftpd etc
+fail2ban_only_configure_jails: false
+
+# Default jail configuration (overwritten by individual jails settings)
+fail2ban_default_jail_config:
+  ignoreip: '127.0.0.1/8'
+  bantime: 600
+  findtime: 600
+  maxretry: 5
+  banaction: firewallcmd-ipset
+
+# Configurable set of default jails; recommend you put this in your defaults.yml
+fail2ban_default_jails:
+  sshd:
+    enabled: true
+    port: ssh
+    filter: sshd
+    logpath: '%(sshd_log)s'
+    maxretry: 6
+  sshd_ddos:
+    enabled: true
+    port: ssh
+    filter: sshd-ddos
+    logpath: '%(sshd_log)s'
+    maxretry: 10
+
+# Set of custom jails that should be configured on a per role basis
+fail2ban_custom_jails: {}
+
+fail2ban_main_config:
+  loglevel: 'INFO'
+  logtarget: '/var/log/fail2ban.log'
+  socket: '/var/run/fail2ban/fail2ban.sock'
+  pidfile: '/var/run/fail2ban/fail2ban.pid'
+  dbfile: '/var/lib/fail2ban/fail2ban.sqlite3'
+  dbpurgeage: 86400

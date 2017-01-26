@@ -1,0 +1,68 @@
+---
+- name: Create directories
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0750'
+  with_items:
+    - '{{ fail2ban_home }}'
+    - '{{ fail2ban_jail_confd }}'
+    - '{{ fail2ban_filter_confd }}'
+    - '{{ fail2ban_action_confd }}'
+    - '{{ fail2ban_main_confd }}'
+  when: not fail2ban_only_configure_jails
+
+- name: Main configuration file
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0640'
+  with_items:
+    - { src: 'fail2ban.local.j2', dest: '{{ fail2ban_main_conf }}' }
+    - { src: 'jail.local.j2',     dest: '{{ fail2ban_jail_conf }}' }
+  when: not fail2ban_only_configure_jails
+  notify:
+    - reload fail2ban
+
+- name: configuring default jails
+  template:
+    src: 'jail.j2'
+    dest: '{{ fail2ban_jail_confd }}/{{ item.key }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0640'
+  with_dict: '{{ fail2ban_default_jails }}'
+  notify:
+    - reload fail2ban
+
+- name: configuring filters
+  copy:
+    src: 'filter/{{ item }}'
+    dest: '{{ fail2ban_filter_confd }}/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  with_items: '{{ fail2ban_custom_filters }}'
+  notify:
+    - reload fail2ban
+
+- name: configuring custom jails
+  template:
+    src: 'jail.j2'
+    dest: '{{ fail2ban_jail_confd }}/{{ item.key }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0640'
+  with_dict: '{{ fail2ban_custom_jails }}'
+  notify:
+    - reload fail2ban
+
+- name: Remove unmanaged jails
+  file:
+    path: '{{ fail2ban_jail_confd }}/all.conf'
+    state: absent
+    force: yes

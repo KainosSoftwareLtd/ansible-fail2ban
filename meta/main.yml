@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Caoimhin Graham
+  description: A role that installs fail2ban and manages configuration
+  license: MIT
+  min_ansible_version: 2.1
+  platforms:
+  - name: EL
+    versions:
+    - 7
+  categories:
+  - system
+  - networking
+  - web
+  - security

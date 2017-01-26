@@ -1,0 +1,6 @@
+---
+- name: Service running
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes

@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+[Definition]
+{% for key, value in fail2ban_main_config.iteritems() %}
+{{ key | lower }} = {{ value | lower }}
+{% endfor %}
