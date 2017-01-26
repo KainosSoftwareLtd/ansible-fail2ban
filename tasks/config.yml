@@ -47,6 +47,7 @@
     group: root
     mode: '0644'
   with_items: '{{ fail2ban_custom_filters }}'
+  when: not fail2ban_only_configure_jails
   notify:
     - reload fail2ban
 
@@ -66,3 +67,6 @@
     path: '{{ fail2ban_jail_confd }}/all.conf'
     state: absent
     force: yes
+
+- name: flush handlers to restart fail2ban immediately
+  meta: flush_handlers
