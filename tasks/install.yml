@@ -1,6 +1,6 @@
 ---
 - name: Install packages
-  yum:
+  package:
     name: '{{ item.name }}'
     state: '{{ item.state }}'
   with_items: '{{ fail2ban_packages }}'
